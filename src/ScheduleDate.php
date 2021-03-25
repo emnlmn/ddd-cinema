@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Workshop\DDD\Cinema;
+
 final class ScheduleDate
 {
     private $day;
@@ -15,16 +17,16 @@ final class ScheduleDate
         $this->year = $year;
     }
 
-    private function validateDay(int $day)
+    private static function validateDay(int $day)
     {
-        if ($day < 1 && $day > 31) {
-            // ...
-        }
+//        if ($day < 1 && $day > 31) {
+//            // ...
+//        }
     }
 
-    public sta«tic function of(int $day, int $month, int $year): ScheduleDate
+    public static function of(int $day, int $month, int $year): ScheduleDate
     {
-        $this->validateDay($day);
+        self::validateDay($day);
 
         return new ScheduleDate($day, $month, $year);
     }

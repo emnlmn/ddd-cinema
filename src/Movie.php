@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+namespace Workshop\DDD\Cinema;
+
 class Movie
 {
-    MovieTitle $title;
+    private MovieTitle $title;
 }
