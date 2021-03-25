@@ -7,11 +7,13 @@
     }
   ],
   "require": {
-    "behat/behat": "^3.8"
+    "behat/behat": "^3.8",
+    "ramsey/uuid": "^4.1"
   },
   "autoload": {
     "psr-4": {
-      "Workshop\\DDD\\Cinema\\": "src/"
+      "Workshop\\DDD\\Cinema\\": "src/",
+      "Workshop\\DDD\\Cinema\\Test\\": "features/bootstrap"
     }
   },
   "description": ""
