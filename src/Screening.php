@@ -10,41 +10,20 @@ use Workshop\DDD\Cinema\Event\SeatReserved;
 
 final class Screening
 {
-    private int $id;
-    private int $seats;
+    private ScreeningState $state;
 
-    public function __construct(int $id,  int $seats, Events $events)
+    public function __construct(ScreeningState $state)
     {
-        $this->id = $id;
-        $this->seats = $seats;
-
-        foreach ($events as $event) {
-            $this->apply($event);
-        }
+        $this->state = $state;
     }
 
-    public function id(): int
+    public function availableSeat(): int
     {
-        return $this->id;
+        return $this->state->seats();
     }
 
-    public function getSeats(): int
+    public function reserveSeat()
     {
-        return $this->seats;
-    }
-
-    public function apply(Event $event) {
-
-        if($event instanceof SeatReserved) {
-            $this->seats--;
-        }
 
     }
-
-    public function reserveSeat() {
-
-
-
-    }
-
 }

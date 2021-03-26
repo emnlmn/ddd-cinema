@@ -7,15 +7,14 @@ use Behat\Behat\Context\Context;
 use Workshop\DDD\Cinema\Customer;
 use Workshop\DDD\Cinema\Event\SeatReserved;
 use Workshop\DDD\Cinema\Screening;
+use Workshop\DDD\Cinema\ScreeningState;
 use function PHPUnit\Framework\assertEquals;
 
 class FeatureContext implements Context
 {
     private Screening $screening;
+    private ScreeningState $screeningState;
 
-    public function __construct()
-    {
-    }
 
     /**
      * @When The Customer reserve a Seat
@@ -23,8 +22,7 @@ class FeatureContext implements Context
     public function theCustomerReserveASeat()
     {
         $event = new SeatReserved();
-        $this->screening->apply($event);
-
+        $this->screeningState->apply($event);
     }
 
     /**
@@ -40,7 +38,9 @@ class FeatureContext implements Context
      */
     public function aScreeningWithSeats(int $seats)
     {
-        $this->screening = new Screening(1, $seats);
+        $this->screeningState = new ScreeningState([]);
+
+        $this->screening = new Screening($this->screeningState);
     }
 
     /**
@@ -48,6 +48,6 @@ class FeatureContext implements Context
      */
     public function theSeatsAvailableAre($expectedSeats)
     {
-        assertEquals($this->screening->getSeats(), $expectedSeats, 'seat not reserved');
+        assertEquals($this->screening->availableSeat(), $expectedSeats, 'seat not reserved');
     }
 }
