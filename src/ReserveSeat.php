@@ -7,21 +7,21 @@ use Ramsey\Uuid\UuidInterface;
 
 class ReserveSeat
 {
-    private UuidInterface $customerId;
-    private UuidInterface $screeningId;
+    private int $customerId;
+    private int $screeningId;
 
-    public function __construct(UuidInterface $customerId, UuidInterface $screeningId)
+    public function __construct(int $customerId, int $screeningId)
     {
         $this->customerId = $customerId;
         $this->screeningId = $screeningId;
     }
 
-    public function customerId(): UuidInterface
+    public function customerId(): int
     {
         return $this->customerId;
     }
 
-    public function screeningId(): UuidInterface
+    public function screeningId(): int
     {
         return $this->screeningId;
     }

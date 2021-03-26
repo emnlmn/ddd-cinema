@@ -1,0 +1,7 @@
+default:
+  suites:
+    ddd:
+      paths:
+        - features
+      contexts:
+        - Workshop\DDD\Cinema\Test\FeatureContext

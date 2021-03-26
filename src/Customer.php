@@ -9,20 +9,20 @@ use Ramsey\Uuid\UuidInterface;
 
 class Customer
 {
-    private UuidInterface $id;
+    private int $id;
 
-    private function __construct(UuidInterface $id)
+    private function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    public function id(): UuidInterface
+    public function id(): int
     {
         return $this->id;
     }
 
-    public static function create(): self
+    public static function create(int $id): self
     {
-        return new self(Uuid::uuid4());
+        return new self($id);
     }
 }

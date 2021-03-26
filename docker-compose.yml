@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+
+  php:
+    image: php:8.0.3-cli-alpine3.13
+    working_dir: /home/php
+    volumes:
+      - ./:/home/php
+
+  composer:
+    image: composer:2.0.11
+    working_dir: /home/php
+    volumes:
+      - ./:/home/php

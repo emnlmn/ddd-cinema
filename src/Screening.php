@@ -5,37 +5,46 @@ namespace Workshop\DDD\Cinema;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Workshop\DDD\Cinema\Event\Event;
+use Workshop\DDD\Cinema\Event\SeatReserved;
 
 final class Screening
 {
-    private Movie $movie;
-    private ScreeningDateTime $scheduledDateTime;
-    private UuidInterface $id;
+    private int $id;
+    private int $seats;
 
-    private function __construct(UuidInterface $id, Movie $movie, ScreeningDateTime $scheduledDateTime)
+    public function __construct(int $id,  int $seats, Events $events)
     {
-        $this->movie = $movie;
-        $this->scheduledDateTime = $scheduledDateTime;
         $this->id = $id;
+        $this->seats = $seats;
+
+        foreach ($events as $event) {
+            $this->apply($event);
+        }
     }
 
-    public function id(): UuidInterface
+    public function id(): int
     {
         return $this->id;
     }
 
-    public function getMovie(): Movie
+    public function getSeats(): int
     {
-        return $this->movie;
+        return $this->seats;
     }
 
-    public function getScheduledDateTime(): ScreeningDateTime
-    {
-        return $this->scheduledDateTime;
+    public function apply(Event $event) {
+
+        if($event instanceof SeatReserved) {
+            $this->seats--;
+        }
+
     }
 
-    public static function create(Movie $movie, ScreeningDateTime $scheduledDateTime): self
-    {
-        return new self(Uuid::uuid4(), $movie, $scheduledDateTime);
+    public function reserveSeat() {
+
+
+
     }
+
 }
