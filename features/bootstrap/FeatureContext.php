@@ -6,13 +6,13 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Workshop\DDD\Cinema\Customer;
 use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
-use Workshop\DDD\Cinema\Domain\CommandHandler;
+use Workshop\DDD\Cinema\Infrastructure\CommandHandler;
 use Workshop\DDD\Cinema\Domain\Event\Event;
 use Workshop\DDD\Cinema\Domain\Event\EventStore;
-use Workshop\DDD\Cinema\Domain\Event\ScreeningIsReady;
+use Workshop\DDD\Cinema\Domain\Event\ScreeningHasBeenPlanned;
 use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
-use Workshop\DDD\Cinema\Domain\Screenings;
-use Workshop\DDD\Cinema\Domain\ScreeningState;
+use Workshop\DDD\Cinema\Domain\Aggregates\Screenings;
+use Workshop\DDD\Cinema\Domain\Aggregates\ScreeningState;
 use Workshop\DDD\Cinema\Infrastructure\InMemoryEventStore;
 use function PHPUnit\Framework\assertEquals;
 
@@ -45,7 +45,7 @@ class FeatureContext implements Context
     public function aScreeningWithSeats(int $seats)
     {
         $this->eventStore = new InMemoryEventStore();
-        $this->eventStore->add(new ScreeningIsReady($seats));
+        $this->eventStore->add(new ScreeningHasBeenPlanned($seats));
         $this->commandHandler = new CommandHandler($this->eventStore);
     }
 

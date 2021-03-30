@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Workshop\DDD\Cinema\Domain;
+namespace Workshop\DDD\Cinema\Domain\Aggregates;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
 use Workshop\DDD\Cinema\Domain\Event\Event;
 use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
-use Workshop\DDD\Cinema\Domain\ScreeningState;
+use Workshop\DDD\Cinema\Domain\Aggregates\ScreeningState;
 
 final class Screenings
 {
@@ -29,10 +29,5 @@ final class Screenings
     public function reserveSeat(ReserveSeat $reserveSeat): void
     {
         ($this->publish)(new SeatReserved());
-    }
-    
-    public static function get()
-    {
-    
     }
 }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Workshop\DDD\Cinema\Domain\Event;
 
-class ScreeningIsReady extends Event
+class ScreeningHasBeenPlanned extends Event
 {
     private int $availableSeats;
     

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Workshop\DDD\Cinema\Domain;
+namespace Workshop\DDD\Cinema\Infrastructure;
 
 use Workshop\DDD\Cinema\Domain\Command\Command;
 use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
 use Workshop\DDD\Cinema\Domain\Event\Event;
 use Workshop\DDD\Cinema\Domain\Event\EventStore;
-use Workshop\DDD\Cinema\Domain\Screenings;
-use Workshop\DDD\Cinema\Domain\ScreeningState;
+use Workshop\DDD\Cinema\Domain\Aggregates\Screenings;
+use Workshop\DDD\Cinema\Domain\Aggregates\ScreeningState;
 
 class CommandHandler
 {

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Workshop\DDD\Cinema\Domain;
+namespace Workshop\DDD\Cinema\Domain\Aggregates;
 
 use Workshop\DDD\Cinema\Domain\Event\Event;
-use Workshop\DDD\Cinema\Domain\Event\ScreeningIsReady;
+use Workshop\DDD\Cinema\Domain\Event\ScreeningHasBeenPlanned;
 use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
 
 final class ScreeningState
@@ -23,7 +23,7 @@ final class ScreeningState
 
     public function apply(Event $event): void
     {
-        if ($event instanceof ScreeningIsReady) {
+        if ($event instanceof ScreeningHasBeenPlanned) {
             $this->seats = $event->getAvailableSeats();
         }
         
