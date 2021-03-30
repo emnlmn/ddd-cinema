@@ -3,17 +3,19 @@ declare(strict_types=1);
 
 namespace Workshop\DDD\Cinema\Domain\Event;
 
+use Workshop\DDD\Cinema\Domain\ValueObject\Screening;
+
 class ScreeningHasBeenPlanned extends Event
 {
-    private int $availableSeats;
+    private Screening $screening;
     
-    public function __construct(int $availableSeats)
+    public function __construct(Screening $screening)
     {
-        $this->availableSeats = $availableSeats;
+        $this->screening = $screening;
     }
     
-    public function getAvailableSeats(): int
+    public function getScreening(): Screening
     {
-        return $this->availableSeats;
+        return $this->screening;
     }
 }

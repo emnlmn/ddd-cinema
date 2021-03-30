@@ -6,10 +6,15 @@ namespace Workshop\DDD\Cinema\Domain\Aggregates;
 use Workshop\DDD\Cinema\Domain\Event\Event;
 use Workshop\DDD\Cinema\Domain\Event\ScreeningHasBeenPlanned;
 use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
+use Workshop\DDD\Cinema\Domain\ValueObject\Screening;
+use Workshop\DDD\Cinema\Domain\ValueObject\Seat;
 
 final class ScreeningState
 {
-    private int $seats = 10;
+    /**
+     * @var array<string, Seat[]>
+     */
+    private array $screenings = [];
     
     /**
      * @param Event[]
@@ -24,16 +29,21 @@ final class ScreeningState
     public function apply(Event $event): void
     {
         if ($event instanceof ScreeningHasBeenPlanned) {
-            $this->seats = $event->getAvailableSeats();
+            $this->screenings[$event->getScreening()->getId()] = [];
         }
         
         if ($event instanceof SeatReserved) {
-            $this->seats--;
+            $screening = $this->screenings[$event->getScreening()->getId()][$event->getSeat()->getId()] = $event->getSeat();
         }
     }
 
-    public function seats(): int
+    public function screenings(): array
     {
-        return $this->seats;
+        return $this->screenings;
+    }
+    
+    public function getReservedSeats(string $screening): array
+    {
+        return $this->screenings[$screening];
     }
 }

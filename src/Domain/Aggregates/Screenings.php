@@ -9,10 +9,12 @@ use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
 use Workshop\DDD\Cinema\Domain\Event\Event;
 use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
 use Workshop\DDD\Cinema\Domain\Aggregates\ScreeningState;
+use Workshop\DDD\Cinema\Domain\ValueObject\Seat;
 
 final class Screenings
 {
     private ScreeningState $state;
+    
     private $publish;
 
     public function __construct(ScreeningState $state, callable $publish)
@@ -20,14 +22,18 @@ final class Screenings
         $this->state = $state;
         $this->publish = $publish;
     }
-
-    public function availableSeat(): int
+    
+    /**
+     * @param string $screening
+     * @return Seat[]
+     */
+    public function getReservedSeats(string $screening): array
     {
-        return $this->state->seats();
+        return $this->state->getReservedSeats($screening);
     }
 
     public function reserveSeat(ReserveSeat $reserveSeat): void
     {
-        ($this->publish)(new SeatReserved());
+        ($this->publish)(new SeatReserved($reserveSeat->getScreening(), $reserveSeat->getSeat(), $reserveSeat->getCustomer()));
     }
 }
