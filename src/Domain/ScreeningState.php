@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Workshop\DDD\Cinema;
+namespace Workshop\DDD\Cinema\Domain;
 
-use Workshop\DDD\Cinema\Event\Event;
-use Workshop\DDD\Cinema\Event\SeatReserved;
+use Workshop\DDD\Cinema\Domain\Event\Event;
+use Workshop\DDD\Cinema\Domain\Event\ScreeningIsReady;
+use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
 
 final class ScreeningState
 {
     private int $seats = 10;
-
+    
+    /**
+     * @param Event[]
+     */
     public function __construct(array $events)
     {
         foreach ($events as $event){
@@ -19,6 +23,10 @@ final class ScreeningState
 
     public function apply(Event $event): void
     {
+        if ($event instanceof ScreeningIsReady) {
+            $this->seats = $event->getAvailableSeats();
+        }
+        
         if ($event instanceof SeatReserved) {
             $this->seats--;
         }

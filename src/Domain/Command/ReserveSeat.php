@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Workshop\DDD\Cinema;
+namespace Workshop\DDD\Cinema\Domain\Command;
 
 use Ramsey\Uuid\UuidInterface;
 
-class ReserveSeat
+class ReserveSeat extends Command
 {
     private int $customerId;
     private int $screeningId;

@@ -5,24 +5,30 @@ namespace Workshop\DDD\Cinema\Test;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Workshop\DDD\Cinema\Customer;
-use Workshop\DDD\Cinema\Event\SeatReserved;
-use Workshop\DDD\Cinema\Screening;
-use Workshop\DDD\Cinema\ScreeningState;
+use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
+use Workshop\DDD\Cinema\Domain\CommandHandler;
+use Workshop\DDD\Cinema\Domain\Event\Event;
+use Workshop\DDD\Cinema\Domain\Event\EventStore;
+use Workshop\DDD\Cinema\Domain\Event\ScreeningIsReady;
+use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
+use Workshop\DDD\Cinema\Domain\Screenings;
+use Workshop\DDD\Cinema\Domain\ScreeningState;
+use Workshop\DDD\Cinema\Infrastructure\InMemoryEventStore;
 use function PHPUnit\Framework\assertEquals;
 
 class FeatureContext implements Context
 {
-    private Screening $screening;
-    private ScreeningState $screeningState;
-
+    private CommandHandler $commandHandler;
+    
+    private EventStore $eventStore;
 
     /**
      * @When The Customer reserve a Seat
      */
     public function theCustomerReserveASeat()
     {
-        $event = new SeatReserved();
-        $this->screeningState->apply($event);
+        $command = new ReserveSeat(1, 10);
+        ($this->commandHandler)($command);
     }
 
     /**
@@ -38,9 +44,9 @@ class FeatureContext implements Context
      */
     public function aScreeningWithSeats(int $seats)
     {
-        $this->screeningState = new ScreeningState([]);
-
-        $this->screening = new Screening($this->screeningState);
+        $this->eventStore = new InMemoryEventStore();
+        $this->eventStore->add(new ScreeningIsReady($seats));
+        $this->commandHandler = new CommandHandler($this->eventStore);
     }
 
     /**
@@ -48,6 +54,15 @@ class FeatureContext implements Context
      */
     public function theSeatsAvailableAre($expectedSeats)
     {
-        assertEquals($this->screening->availableSeat(), $expectedSeats, 'seat not reserved');
+        $eventStore = $this->eventStore;
+        $screeningState = new ScreeningState($eventStore->get());
+    
+        $publish = static function (Event $e) use ($screeningState, $eventStore) {
+            $eventStore->add($e);
+            $screeningState->apply($e);
+        };
+    
+        $screening = new Screenings($screeningState, $publish);
+        assertEquals($expectedSeats, $screening->availableSeat());
     }
 }
