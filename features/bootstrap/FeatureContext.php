@@ -4,50 +4,73 @@ namespace Workshop\DDD\Cinema\Test;
 
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
-use Workshop\DDD\Cinema\Customer;
-use Workshop\DDD\Cinema\Event\SeatReserved;
-use Workshop\DDD\Cinema\Screening;
-use Workshop\DDD\Cinema\ScreeningState;
+use Workshop\DDD\Cinema\Domain\Command\ReserveSeat;
+use Workshop\DDD\Cinema\Domain\Customer;
+use Workshop\DDD\Cinema\Domain\ValueObject\Screening;
+use Workshop\DDD\Cinema\Domain\ValueObject\Seat;
+use Workshop\DDD\Cinema\Infrastructure\CommandHandler;
+use Workshop\DDD\Cinema\Domain\Event\Event;
+use Workshop\DDD\Cinema\Domain\Event\EventStore;
+use Workshop\DDD\Cinema\Domain\Event\ScreeningHasBeenPlanned;
+use Workshop\DDD\Cinema\Domain\Event\SeatReserved;
+use Workshop\DDD\Cinema\Domain\Aggregates\Screenings;
+use Workshop\DDD\Cinema\Domain\Aggregates\ScreeningState;
+use Workshop\DDD\Cinema\Infrastructure\InMemoryEventStore;
+use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertTrue;
 
 class FeatureContext implements Context
 {
-    private Screening $screening;
-    private ScreeningState $screeningState;
-
-
+    private CommandHandler $commandHandler;
+    
+    private EventStore $eventStore;
+    
+    private Customer $customer;
+    
     /**
-     * @When The Customer reserve a Seat
+     * @Given /^a Screening with name "([^"]*)"$/
      */
-    public function theCustomerReserveASeat()
+    public function aScreeningWithName(string $name): void
     {
-        $event = new SeatReserved();
-        $this->screeningState->apply($event);
+        $this->eventStore = new InMemoryEventStore();
+        $this->eventStore->add(new ScreeningHasBeenPlanned(new Screening($name)));
+        $this->commandHandler = new CommandHandler($this->eventStore);
     }
-
+    
     /**
-     * @Then The Seat is reserved
+     * @Given /^a Customer named "([^"]*)"$/
      */
-    public function theSeatIsReserved()
+    public function aCustomerNamed($customerName): void
     {
-        throw new PendingException();
+        $this->customer = new Customer($customerName);
     }
-
+    
     /**
-     * @Given /^a Screening with (\d+) seats$/
+     * @When /^he reserve the Seat "([^"]*)" for Screening "([^"]*)"$/
      */
-    public function aScreeningWithSeats(int $seats)
+    public function heReserveTheSeatForScreening(string $seatName, string $screeningName): void
     {
-        $this->screeningState = new ScreeningState([]);
-
-        $this->screening = new Screening($this->screeningState);
+        $command = new ReserveSeat(new Screening($screeningName), new Seat($seatName), $this->customer);
+        ($this->commandHandler)($command);
     }
-
+    
     /**
-     * @Then /^The Seats available are (\d+)$/
+     * @Then /^the Seat "([^"]*)" for Screening "([^"]*)" is reserved$/
      */
-    public function theSeatsAvailableAre($expectedSeats)
+    public function theSeatForScreeningIsReserved(string $seatId, $screeningName): void
     {
-        assertEquals($this->screening->availableSeat(), $expectedSeats, 'seat not reserved');
+        $eventStore = $this->eventStore;
+        $screeningState = new ScreeningState($eventStore->get());
+        
+        $publish = static function (Event $e) use ($screeningState, $eventStore) {
+            $eventStore->add($e);
+            $screeningState->apply($e);
+        };
+    
+        $screenings = new Screenings($screeningState, $publish);
+        $seats = $screenings->getReservedSeats($screeningName);
+    
+        assertTrue(isset($seats[$seatId]));
     }
 }
